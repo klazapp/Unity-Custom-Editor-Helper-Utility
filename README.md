@@ -1,2 +1,0 @@
-# Inspector-Utility
- Custom inspector
