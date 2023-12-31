@@ -28,7 +28,7 @@ namespace com.Klazapp.Editor
         }
      
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void DrawBox(int boxWidth = 0, int boxHeight = 0, Color boxColor = new(), string titleText = "", GUIStyle titleStyle = null, Texture2D iconTexture = null)
+        public static void DrawBox(int boxWidth = 0, int boxHeight = 0, Color boxColor = new(), string titleText = "", GUIStyle titleStyle = null, Texture2D iconTexture = null, GUIStyle boxStyle = null)
         {
             //Store original color
             var originalBgColor = GUI.backgroundColor;
@@ -36,8 +36,12 @@ namespace com.Klazapp.Editor
             //Retrieve current skin
             var currentSkin = GUI.skin;
             var currentSkinBoxNormalBg = currentSkin.box.normal.background;
-            currentSkin.box.normal.background = Texture2D.whiteTexture;
-           
+
+            if (boxStyle == null)
+            {
+                currentSkin.box.normal.background = Texture2D.whiteTexture;
+            }
+          
             //Set new color
             GUI.backgroundColor = boxColor;
 
@@ -45,8 +49,9 @@ namespace com.Klazapp.Editor
 
             EditorGUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
-            
-            EditorGUILayout.BeginVertical(currentSkin.box, boxWidthGUILayoutOptions, boxHeightGUILayoutOptions);
+
+            EditorGUILayout.BeginVertical(boxStyle ?? currentSkin.box, boxWidthGUILayoutOptions, boxHeightGUILayoutOptions);
+
             EditorGUILayout.BeginHorizontal();
 
             titleStyle ??= new GUIStyle();
