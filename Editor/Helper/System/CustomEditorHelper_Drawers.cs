@@ -26,32 +26,98 @@ namespace com.Klazapp.Editor
         {
             EditorGUILayout.Space(space);
         }
-     
+        
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void DrawBox(int boxWidth = 0, int boxHeight = 0, Color boxColor = new(), string titleText = "", GUIStyle titleStyle = null, Texture2D iconTexture = null, GUIStyle boxStyle = null)
+        public static bool DrawButton(int buttonWidth = 0, int buttonHeight = 0, Color buttonColor = new(), string titleText = "", GUIStyle titleStyle = null, Texture2D iconTexture = null, Alignment alignment = Alignment.Middle)
+        {
+            //Button pressed state
+            var buttonPressed = false;
+            
+            //Store original color
+            var originalBgColor = GUI.backgroundColor;
+
+            //Retrieve current skin
+            var currentSkin = GUI.skin;
+       
+            var currentSkinBoxNormalBg = currentSkin.box.normal.background;
+            currentSkin.box.normal.background = Texture2D.whiteTexture;
+           
+            //Set new color
+            GUI.backgroundColor = buttonColor;
+
+            var (buttonWidthGUILayoutOptions, buttonHeightGUILayoutOptions) = GetGUILayoutOptions(buttonWidth, buttonHeight);
+            
+            EditorGUILayout.BeginHorizontal();
+            
+            if (alignment == Alignment.Middle)
+            {
+                GUILayout.FlexibleSpace();
+            }
+
+            EditorGUILayout.BeginVertical(currentSkin.button, buttonWidthGUILayoutOptions, buttonHeightGUILayoutOptions);
+      
+            titleStyle ??= new GUIStyle();
+            
+            if (iconTexture != null)
+            {
+                var buttonGUIContent = new GUIContent
+                {       
+                    image = iconTexture,
+                
+                    //Add spacing betwixt texture and text
+                    text = "     " + titleText,
+                };
+
+                buttonPressed = GUILayout.Button(buttonGUIContent, titleStyle, buttonWidthGUILayoutOptions,
+                    buttonHeightGUILayoutOptions);
+            }
+            else
+            {
+                buttonPressed = GUILayout.Button(titleText, titleStyle, buttonWidthGUILayoutOptions,
+                    buttonHeightGUILayoutOptions);
+            }
+
+            EditorGUILayout.EndVertical();
+
+            if (alignment == Alignment.Middle)
+            {
+                GUILayout.FlexibleSpace();
+            }
+            
+            EditorGUILayout.EndHorizontal();
+            
+            //Restore original color and skin
+            GUI.backgroundColor = originalBgColor;
+            currentSkin.box.normal.background = currentSkinBoxNormalBg;
+            
+            return buttonPressed;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void DrawBox(int boxWidth = 0, int boxHeight = 0, Color boxColor = new(), string titleText = "", GUIStyle titleStyle = null, Texture2D iconTexture = null, Alignment alignment = Alignment.Middle)
         {
             //Store original color
             var originalBgColor = GUI.backgroundColor;
 
             //Retrieve current skin
             var currentSkin = GUI.skin;
+       
             var currentSkinBoxNormalBg = currentSkin.box.normal.background;
-
-            if (boxStyle == null)
-            {
-                currentSkin.box.normal.background = Texture2D.whiteTexture;
-            }
-          
+            currentSkin.box.normal.background = Texture2D.whiteTexture;
+           
             //Set new color
             GUI.backgroundColor = boxColor;
 
             var (boxWidthGUILayoutOptions, boxHeightGUILayoutOptions) = GetGUILayoutOptions(boxWidth, boxHeight);
 
             EditorGUILayout.BeginHorizontal();
-            GUILayout.FlexibleSpace();
 
-            EditorGUILayout.BeginVertical(boxStyle ?? currentSkin.box, boxWidthGUILayoutOptions, boxHeightGUILayoutOptions);
-
+            if (alignment == Alignment.Middle)
+            {
+                GUILayout.FlexibleSpace();
+            }
+            
+            EditorGUILayout.BeginVertical(currentSkin.box, boxWidthGUILayoutOptions, boxHeightGUILayoutOptions);
             EditorGUILayout.BeginHorizontal();
 
             titleStyle ??= new GUIStyle();
@@ -76,7 +142,11 @@ namespace com.Klazapp.Editor
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.EndVertical();
             
-            GUILayout.FlexibleSpace();
+            if (alignment == Alignment.Middle)
+            {
+                GUILayout.FlexibleSpace();
+            }
+
             EditorGUILayout.EndHorizontal();
 
             //Restore original color and skin
