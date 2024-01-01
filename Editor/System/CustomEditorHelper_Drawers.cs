@@ -1,6 +1,5 @@
 using System;
 using System.Runtime.CompilerServices;
-using Unity.Mathematics;
 using UnityEditor;
 using UnityEngine;
 
@@ -25,6 +24,14 @@ namespace com.Klazapp.Editor
         public static void DrawSpace(int space)
         {
             EditorGUILayout.Space(space);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void DrawVerticalSpace(int height)
+        {
+            EditorGUILayout.BeginHorizontal(); 
+            DrawBox(0, height);
+            EditorGUILayout.EndHorizontal();
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -223,7 +230,7 @@ namespace com.Klazapp.Editor
             }
             
             var (boxWidthGUILayoutOptions, boxHeightGUILayoutOptions) = GetGUILayoutOptions(boxWidth, boxHeight);
-            
+
             EditorGUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
             EditorGUILayout.BeginVertical(GUI.skin.box, boxWidthGUILayoutOptions, boxHeightGUILayoutOptions);
@@ -253,32 +260,7 @@ namespace com.Klazapp.Editor
             switch (propType)
             {
                 case SerializedPropertyType.Generic:
-                    var isArray = prop.isArray;
-
-                    if (isArray)
-                    {
-                        EditorGUILayout.PropertyField(prop, true);
-                    }
-                    else
-                    {
-                        var val = prop.boxedValue;
-                        if (val is float3)
-                        {
-                            EditorGUILayout.Vector3Field("", prop.GetFloat3AsVector());
-                        }
-                        else if (val is quaternion)
-                        {
-                            EditorGUILayout.Vector4Field("", prop.GetQuaternionAsVector());
-                        }
-                        else if (val is Quaternion)
-                        {
-                            EditorGUILayout.Vector4Field("", prop.GetQuaternionAsVector());
-                        }
-                        else
-                        {
-                            EditorGUILayout.PropertyField(prop, true);
-                        }
-                    }
+                    EditorGUILayout.PropertyField(prop, true);
                     break;
                 case SerializedPropertyType.Integer:
                     EditorGUILayout.PropertyField(prop, true);
