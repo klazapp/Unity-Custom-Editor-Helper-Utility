@@ -155,6 +155,66 @@ namespace com.Klazapp.Editor
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void DrawBoxWithBackground(int boxWidth = 0, int boxHeight = 0, int padding = 2, Color outerBoxColor = new(), Color innerBoxColor = new(), string titleText = "", GUIStyle titleStyle = null, Texture2D iconTexture = null, Alignment alignment = Alignment.Middle)
+        {
+            //Store original color and background
+            var originalBgColor = GUI.backgroundColor;
+            var originalColor = GUI.color;
+            var originalBackground = GUI.skin.box.normal.background;
+
+            //Create a white texture for coloring
+            var whiteTexture = new Texture2D(1, 1);
+            whiteTexture.SetPixel(0, 0, Color.white);
+            whiteTexture.Apply();
+
+            //Set the background texture to the white texture
+            GUI.skin.box.normal.background = whiteTexture;
+
+            var (outerBoxWidthOptions, outerBoxHeightOptions) = GetGUILayoutOptions(boxWidth + padding * 2, boxHeight + padding * 2);
+
+            EditorGUILayout.BeginHorizontal();
+            if (alignment == Alignment.Middle)
+            {
+                GUILayout.FlexibleSpace();
+            }
+
+            //Draw outer (background) box
+            GUI.backgroundColor = outerBoxColor;
+            EditorGUILayout.BeginVertical(GUI.skin.box, outerBoxWidthOptions, outerBoxHeightOptions);
+            GUILayout.Space(boxHeight + padding * 2);
+            EditorGUILayout.EndVertical();
+
+            //Draw inner (colored) box
+            var lastRect = GUILayoutUtility.GetLastRect();
+            lastRect = new Rect(lastRect.x + padding, lastRect.y + padding, lastRect.width - padding * 2, lastRect.height - padding * 2);
+            GUI.backgroundColor = innerBoxColor;
+            GUI.Box(lastRect, GUIContent.none);
+
+            //Draw content
+            if (!string.IsNullOrEmpty(titleText) || iconTexture != null)
+            {
+                //Add a bit of offset
+                titleText = "   " + titleText;
+                var contentStyle = titleStyle ?? new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter };
+                GUI.Label(lastRect, new GUIContent(titleText, iconTexture), contentStyle);
+            }
+
+            //Restore original color, background and skin
+            GUI.backgroundColor = originalBgColor;
+            GUI.color = originalColor;
+            GUI.skin.box.normal.background = originalBackground;
+
+            if (alignment == Alignment.Middle)
+            {
+                GUILayout.FlexibleSpace();
+            }
+            EditorGUILayout.EndHorizontal();
+
+            //Clean up white texture
+            UnityEngine.Object.DestroyImmediate(whiteTexture);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void DrawProperty(SerializedProperty prop, int boxWidth = 0, int boxHeight = 0, bool readOnly = false)
         {
             if (readOnly)
