@@ -72,7 +72,7 @@ namespace com.Klazapp.Editor
                     image = iconTexture,
                 
                     //Add spacing betwixt texture and text
-                    text = "     " + titleText,
+                    text = string.IsNullOrEmpty(titleText) ? "" : "     " + titleText,
                 };
 
                 buttonPressed = GUILayout.Button(buttonGUIContent, titleStyle, buttonWidthGUILayoutOptions,
@@ -136,7 +136,7 @@ namespace com.Klazapp.Editor
                     image = iconTexture,
                 
                     //Add spacing betwixt texture and text
-                    text = "     " + titleText,
+                    text = string.IsNullOrEmpty(titleText) ? "" : "     " + titleText,
                 };
                 
                 GUILayout.Label(titleWithIconGUI, titleStyle, boxWidthGUILayoutOptions, boxHeightGUILayoutOptions);
@@ -219,6 +219,50 @@ namespace com.Klazapp.Editor
 
             //Clean up white texture
             UnityEngine.Object.DestroyImmediate(whiteTexture);
+        }
+         
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool DrawColoredFoldout(int width = 0, int height = 0, string contentText = "", GUIStyle contentStyle = null, Color32 backgroundColor = new Color32(), bool foldout = true, Texture2D foldoutDownTex = null, Texture2D foldoutUpTex = null, bool readOnly = false)
+        {
+            if (readOnly)
+            {
+                GUI.enabled = false;
+            }
+            
+            // Store the original colors
+            var originalBackgroundColor = GUI.backgroundColor;
+            var originalContentColor = GUI.contentColor;
+
+            //Set the new colors
+            GUI.backgroundColor = backgroundColor;
+
+            var (widthGUILayoutOption, heightGUILayoutOption) = GetGUILayoutOptions(width, height);
+
+            //Draw the box as background
+            EditorGUILayout.BeginVertical(GUI.skin.box, widthGUILayoutOption, heightGUILayoutOption);
+
+            var foldoutGUIContent = new GUIContent()
+            {
+                image = foldout ? foldoutDownTex : foldoutUpTex,
+                //Add space before text and after image
+                text = "" + contentText,
+            };
+            
+            //Draw the foldout
+            foldout = EditorGUILayout.Foldout(foldout, foldoutGUIContent, true, contentStyle);
+
+            EditorGUILayout.EndVertical();
+
+            // Restore the original colors
+            GUI.backgroundColor = originalBackgroundColor;
+            GUI.contentColor = originalContentColor;
+
+            if (readOnly)
+            {
+                GUI.enabled = true;
+            }
+            
+            return foldout;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
