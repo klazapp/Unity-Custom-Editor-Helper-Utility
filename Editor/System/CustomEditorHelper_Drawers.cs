@@ -110,7 +110,7 @@ namespace com.Klazapp.Editor
             var currentSkin = GUI.skin;
        
             var currentSkinBoxNormalBg = currentSkin.box.normal.background;
-            currentSkin.box.normal.background = Texture2D.whiteTexture;
+            //currentSkin.box.normal.background = Texture2D.whiteTexture;
            
             //Set new color
             GUI.backgroundColor = boxColor;
